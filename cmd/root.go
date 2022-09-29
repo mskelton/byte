@@ -26,13 +26,26 @@ var rootCmd = &cobra.Command{
 			return errors.New("no zettel repo defined. Please define one in $HOME/.config/zet/config.yaml.")
 		}
 
-		editor := editor.Editor{
-			Editor:   viper.GetString("editor"),
-			Filename: "zet*.md",
+		// Resolve the path to the repo that was specified in the config
+		resolvedRepo, err := util.ResolvePath(repo)
+		if err != nil {
+			return err
 		}
 
-		// Prompt the user for the content of the zettel
-		data, err := editor.Prompt()
+		id := util.Id()
+		editor := editor.Editor{
+			Editor:   viper.GetString("editor"),
+			Filename: path.Join(resolvedRepo, id, "README.md"),
+		}
+
+		// Create the directory for the zettel if necessary
+		err = os.Mkdir(path.Dir(editor.Filename), os.ModePerm)
+		if err != nil && !(errors.Is(err, os.ErrExist)) {
+			return err
+		}
+
+		// Open the users editor to edit the file
+		data, err := editor.Edit()
 		if err != nil {
 			return err
 		}
@@ -40,27 +53,14 @@ var rootCmd = &cobra.Command{
 		// Fail if the user didn't enter any content
 		if len(data) == 0 {
 			fmt.Println("zettel content was empty, canceling operation")
+
+			// Remove the empty zettel and it's parent directory
+			err := os.RemoveAll(path.Dir(editor.Filename))
+			if err != nil {
+				return err
+			}
+
 			return nil
-		}
-
-		// Resolve the path to the repo that was specified in the config
-		resolvedRepo, err := util.ResolvePath(repo)
-		if err != nil {
-			return err
-		}
-
-		// Create the directory for the zettel if necessary
-		id := util.Id()
-		err = os.Mkdir(path.Join(resolvedRepo, id), os.ModePerm)
-		if err != nil && !(errors.Is(err, os.ErrExist)) {
-			return err
-		}
-
-		// Write the zettel to the file
-		filename := path.Join(resolvedRepo, id, "README.md")
-		err = os.WriteFile(filename, data, 0666)
-		if err != nil {
-			return err
 		}
 
 		// Print the id to allow filtering the output of this command
