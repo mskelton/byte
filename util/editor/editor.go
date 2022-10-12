@@ -48,7 +48,7 @@ func (e *Editor) Edit() ([]byte, error) {
 
 	// Read the file contents
 	raw, err := os.ReadFile(e.Filename)
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		return []byte{}, err
 	}
 
