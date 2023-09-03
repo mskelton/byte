@@ -1,4 +1,4 @@
-module github.com/mskelton/zet
+module github.com/mskelton/byte
 
 go 1.18
 

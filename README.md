@@ -1,37 +1,41 @@
-# zet
+# byte
 
-CLI to create and manage Zettelkasten.
-
-_Inspired by [rwxrob/zet](https://github.com/rwxrob/zet), but written from scratch because why not!_
+CLI tool to create bytes for my website.
 
 ## Installation
 
 ```bash
-go install github.com/mskelton/zet@latest
+go install github.com/mskelton/byte@latest
 ```
 
 ## Usage
 
-### `zet`
+### `byte`
 
-Create a new zettel.
-
-```bash
-zet
-```
-
-### `zet id`
-
-Create a new zettel id. This is typically not used on it's own.
+Create a new byte .
 
 ```bash
-zet id create
+byte
 ```
 
-### Shell completion
+## Shell completion
 
 To generate shell auto completion scripts, run the following command in your shell.
 
+**bash**
+
 ```bash
-zet completion fish > ~/.config/fish/completions/zet.fish
+byte completion bash > ~/.config/fish/completions/byte.fish
+```
+
+**zsh**
+
+```bash
+byte completion zsh > ~/.config/fish/completions/byte.fish
+```
+
+**fish**
+
+```bash
+byte completion fish > ~/.config/fish/completions/byte.fish
 ```

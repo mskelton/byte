@@ -1,4 +1,4 @@
-package util
+package storage
 
 import (
 	"os"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ResolvePath(name string) (string, error) {
+func resolveDir(name string) (string, error) {
 	if strings.HasPrefix(name, "~/") {
 		home, err := os.UserHomeDir()
 		if err != nil {
