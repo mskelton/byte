@@ -3,8 +3,10 @@ package storage
 import (
 	"errors"
 	"os"
+	"os/exec"
 	"path"
 
+	"github.com/mskelton/byte/internal/storage"
 	"github.com/spf13/viper"
 )
 
@@ -44,7 +46,51 @@ func WriteByte(filename string, data []byte) error {
 	return nil
 }
 
+func cmd(dir string, command string, args ...string) error {
+	cmd := exec.Command(command, args...)
+	cmd.Dir = dir
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func Pull() error {
+	dir, err := storage.GetByteDir()
+	if err != nil {
+		return nil
+	}
+
+	err = cmd(dir, "git", "pull")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func SyncByte(filename string) error {
+	dir := path.Dir(filename)
+
+	// Stage the file
+	err := cmd(dir, "git", "add", filename)
+	if err != nil {
+		return err
+	}
+
+	// Commit the file
+	err = cmd(dir, "git", "commit", "-m", "Add "+path.Base(filename))
+	if err != nil {
+		return err
+	}
+
+	// Push the commit
+	err = cmd(dir, "git", "push")
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -23,6 +23,12 @@ var rootCmd = &cobra.Command{
 	Short: "Create a new byte",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// Pull the latest bytes from the repo if the user specified the --commit
+		// flag. By the time the file is saved, this should be done.
+		if viper.GetBool("commit") {
+			go storage.Pull()
+		}
+
 		// Create a temporary file
 		tempFilename, err := editor.CreateTempFile("byte-*.yml", []byte(TEMPLATE))
 		if err != nil {

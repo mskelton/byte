@@ -12,10 +12,20 @@ go install github.com/mskelton/byte@latest
 
 ### `byte`
 
-Create a new byte .
+Create a new byte.
 
 ```bash
 byte
+```
+
+### `byte list`
+
+_Alias `ls`_
+
+List all bytes that have been created.
+
+```bash
+byte list
 ```
 
 ## Shell completion
