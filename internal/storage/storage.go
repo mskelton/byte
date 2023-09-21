@@ -3,9 +3,9 @@ package storage
 import (
 	"errors"
 	"os"
-	"os/exec"
 	"path"
 
+	"github.com/mskelton/byte/internal/utils"
 	"github.com/spf13/viper"
 )
 
@@ -42,13 +42,8 @@ func WriteByte(filename string, data []byte) error {
 		return err
 	}
 
-	return nil
-}
-
-func cmd(dir string, command string, args ...string) error {
-	cmd := exec.Command(command, args...)
-	cmd.Dir = dir
-	err := cmd.Run()
+	// Format the byte with Prettier
+	err = utils.RunCmd(path.Dir(filename), "bun", "prettier", "--write", filename)
 	if err != nil {
 		return err
 	}
@@ -62,7 +57,7 @@ func Pull() error {
 		return nil
 	}
 
-	err = cmd(dir, "git", "pull")
+	err = utils.RunCmd(dir, "git", "pull")
 	if err != nil {
 		return err
 	}
@@ -74,19 +69,19 @@ func SyncByte(filename string) error {
 	dir := path.Dir(filename)
 
 	// Stage the file
-	err := cmd(dir, "git", "add", filename)
+	err := utils.RunCmd(dir, "git", "add", filename)
 	if err != nil {
 		return err
 	}
 
 	// Commit the file
-	err = cmd(dir, "git", "commit", "-m", "Add "+path.Base(filename))
+	err = utils.RunCmd(dir, "git", "commit", "-m", "Add "+path.Base(filename))
 	if err != nil {
 		return err
 	}
 
 	// Push the commit
-	err = cmd(dir, "git", "push")
+	err = utils.RunCmd(dir, "git", "push")
 	if err != nil {
 		return err
 	}
