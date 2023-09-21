@@ -30,7 +30,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		// Create a temporary file
-		tempFilename, err := editor.CreateTempFile("byte-*.yml", []byte(TEMPLATE))
+		tempFilename, err := editor.CreateTempFile("byte-*.md", []byte(TEMPLATE))
 		if err != nil {
 			return err
 		}

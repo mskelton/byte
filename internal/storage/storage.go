@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"path"
 
-	"github.com/mskelton/byte/internal/storage"
 	"github.com/spf13/viper"
 )
 
@@ -58,7 +57,7 @@ func cmd(dir string, command string, args ...string) error {
 }
 
 func Pull() error {
-	dir, err := storage.GetByteDir()
+	dir, err := GetByteDir()
 	if err != nil {
 		return nil
 	}
