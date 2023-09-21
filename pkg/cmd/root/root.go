@@ -1,13 +1,16 @@
 package root
 
 import (
-	"errors"
+	"bytes"
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/mskelton/byte/internal/editor"
 	"github.com/mskelton/byte/internal/storage"
+	"github.com/mskelton/byte/internal/utils"
+	"github.com/mskelton/byte/pkg/cmd/id"
 	"github.com/mskelton/byte/pkg/cmd/list"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,23 +21,17 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "byte",
 	Short: "Create a new byte",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		slug := args[0]
-		filename, err := storage.GetBytePath(slug)
+		// Create a temporary file
+		tempFilename, err := editor.CreateTempFile("byte-*.yml", []byte(TEMPLATE))
 		if err != nil {
 			return err
 		}
 
 		editor := editor.Editor{
 			Editor:   viper.GetString("editor"),
-			Filename: filename,
-		}
-
-		// Create the directory for the bytetel if necessary
-		err = os.Mkdir(path.Dir(editor.Filename), os.ModePerm)
-		if err != nil && !(errors.Is(err, os.ErrExist)) {
-			return err
+			Filename: tempFilename,
 		}
 
 		// Open the users editor to edit the file
@@ -43,21 +40,39 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		// Fail if the user didn't enter any content
-		if len(data) == 0 {
-			fmt.Println("bytetel content was empty, canceling operation")
+		// Remove the temp file
+		defer func() {
+			os.Remove(editor.Filename)
+		}()
 
-			// Remove the empty byte and it's parent directory
-			err := os.Remove(editor.Filename)
-			if err != nil {
-				return err
-			}
-
+		// Bail if the user didn't enter any content
+		if len(bytes.TrimSpace(data)) <= len(strings.TrimSpace(TEMPLATE)) {
+			fmt.Println("byte content was empty, canceling operation")
 			return nil
 		}
 
+		id := utils.GenerateId()
+		filename, err := storage.GetBytePath(id)
+		if err != nil {
+			return err
+		}
+
+		// Write the byte to the file system
+		err = storage.WriteByte(filename, data)
+		if err != nil {
+			return err
+		}
+
+		// Commit and push the byte to Git if the user specified the --commit flag
+		if viper.GetBool("commit") {
+			err = storage.SyncByte(filename)
+			if err != nil {
+				return err
+			}
+		}
+
 		// Print the slug to allow filtering the output of this command
-		fmt.Println(slug)
+		fmt.Println(id)
 		return nil
 	},
 }
@@ -82,6 +97,7 @@ func init() {
 	viper.BindPFlag("dir", rootCmd.Flags().Lookup("dir"))
 	viper.BindPFlag("editor", rootCmd.Flags().Lookup("editor"))
 
+	rootCmd.AddCommand(id.IdCmd)
 	rootCmd.AddCommand(list.ListCmd)
 }
 

@@ -1,6 +1,6 @@
 # byte
 
-CLI tool to create bytes for my website.
+CLI tool to create bytes (mini posts) for my website.
 
 ## Installation
 
@@ -24,14 +24,16 @@ To generate shell auto completion scripts, run the following command in your she
 
 **bash**
 
+Add the following to your `~/.bash_profile`:
+
 ```bash
-byte completion bash > ~/.config/fish/completions/byte.fish
+eval "$(byte completion bash)"
 ```
 
 **zsh**
 
 ```bash
-byte completion zsh > ~/.config/fish/completions/byte.fish
+byte completion zsh > /usr/local/share/zsh/site-functions/_byte
 ```
 
 **fish**
