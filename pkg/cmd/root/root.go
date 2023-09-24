@@ -12,6 +12,8 @@ import (
 	"github.com/mskelton/byte/internal/utils"
 	"github.com/mskelton/byte/pkg/cmd/id"
 	"github.com/mskelton/byte/pkg/cmd/list"
+	"github.com/mskelton/byte/pkg/cmd/search"
+	"github.com/mskelton/byte/pkg/cmd/url"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -105,6 +107,8 @@ func init() {
 
 	rootCmd.AddCommand(id.IdCmd)
 	rootCmd.AddCommand(list.ListCmd)
+	rootCmd.AddCommand(search.SearchCmd)
+	rootCmd.AddCommand(url.UrlCmd)
 }
 
 func initConfig() {

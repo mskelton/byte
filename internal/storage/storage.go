@@ -4,6 +4,8 @@ import (
 	"errors"
 	"os"
 	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/mskelton/byte/internal/utils"
 	"github.com/spf13/viper"
@@ -87,4 +89,41 @@ func SyncByte(filename string) error {
 	}
 
 	return nil
+}
+
+func SearchBytes(predicate func(byte Byte) bool) ([]Byte, error) {
+	dir, err := GetByteDir()
+	if err != nil {
+		return []Byte{}, err
+	}
+
+	var bytes []Byte
+	err = filepath.Walk(dir, func(name string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() {
+			content, err := os.ReadFile(name)
+			if err != nil {
+				return err
+			}
+
+			// Get the id from the filename
+			id := strings.TrimSuffix(path.Base(name), path.Ext(name))
+
+			byte, err := ParseByte(id, content)
+			if err != nil {
+				return err
+			}
+
+			if predicate(byte) {
+				bytes = append(bytes, byte)
+			}
+		}
+
+		return nil
+	})
+
+	return bytes, err
 }
