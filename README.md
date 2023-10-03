@@ -39,6 +39,14 @@ List all bytes that have been created.
 byte list
 ```
 
+### `tag list`
+
+List all tags associated with bytes.
+
+```bash
+byte tag list
+```
+
 ## Shell completion
 
 To generate shell auto completion scripts, run the following command in your shell.
