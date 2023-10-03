@@ -13,6 +13,7 @@ import (
 	"github.com/mskelton/byte/pkg/cmd/id"
 	"github.com/mskelton/byte/pkg/cmd/list"
 	"github.com/mskelton/byte/pkg/cmd/search"
+	"github.com/mskelton/byte/pkg/cmd/tag"
 	"github.com/mskelton/byte/pkg/cmd/url"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -109,6 +110,7 @@ func init() {
 	rootCmd.AddCommand(list.ListCmd)
 	rootCmd.AddCommand(search.SearchCmd)
 	rootCmd.AddCommand(url.UrlCmd)
+	rootCmd.AddCommand(tag.TagListCmd)
 }
 
 func initConfig() {

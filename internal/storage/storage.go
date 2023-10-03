@@ -91,7 +91,7 @@ func SyncByte(filename string) error {
 	return nil
 }
 
-func SearchBytes(predicate func(byte Byte) bool) ([]Byte, error) {
+func GetAllBytes() ([]Byte, error) {
 	dir, err := GetByteDir()
 	if err != nil {
 		return []Byte{}, err
@@ -117,13 +117,28 @@ func SearchBytes(predicate func(byte Byte) bool) ([]Byte, error) {
 				return err
 			}
 
-			if predicate(byte) {
-				bytes = append(bytes, byte)
-			}
+			bytes = append(bytes, byte)
 		}
 
 		return nil
 	})
+
+	return bytes, err
+
+}
+
+func SearchBytes(predicate func(byte Byte) bool) ([]Byte, error) {
+	bytes, err := GetAllBytes()
+	if err != nil {
+		return []Byte{}, err
+	}
+
+	var filtered []Byte
+	for _, byte := range bytes {
+		if predicate(byte) {
+			filtered = append(filtered, byte)
+		}
+	}
 
 	return bytes, err
 }
