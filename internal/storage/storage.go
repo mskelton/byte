@@ -140,5 +140,5 @@ func SearchBytes(predicate func(byte Byte) bool) ([]Byte, error) {
 		}
 	}
 
-	return bytes, err
+	return filtered, err
 }
