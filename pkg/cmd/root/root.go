@@ -10,6 +10,7 @@ import (
 	"github.com/mskelton/byte/internal/editor"
 	"github.com/mskelton/byte/internal/storage"
 	"github.com/mskelton/byte/internal/utils"
+	"github.com/mskelton/byte/pkg/cmd/edit"
 	"github.com/mskelton/byte/pkg/cmd/id"
 	"github.com/mskelton/byte/pkg/cmd/list"
 	"github.com/mskelton/byte/pkg/cmd/search"
@@ -106,11 +107,12 @@ func init() {
 	viper.BindPFlag("dir", rootCmd.Flags().Lookup("dir"))
 	viper.BindPFlag("editor", rootCmd.Flags().Lookup("editor"))
 
+	rootCmd.AddCommand(edit.EditCmd)
 	rootCmd.AddCommand(id.IdCmd)
 	rootCmd.AddCommand(list.ListCmd)
 	rootCmd.AddCommand(search.SearchCmd)
-	rootCmd.AddCommand(url.UrlCmd)
 	rootCmd.AddCommand(tag.TagListCmd)
+	rootCmd.AddCommand(url.UrlCmd)
 }
 
 func initConfig() {
