@@ -31,7 +31,7 @@ var SearchCmd = &cobra.Command{
 			query := strings.Join(args, " ")
 
 			// First try searching by title
-			if strings.Contains(byte.Title, query) {
+			if strings.Contains(strings.ToLower(byte.Title), strings.ToLower(query)) {
 				return true
 			}
 
