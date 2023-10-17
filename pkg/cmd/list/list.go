@@ -3,13 +3,43 @@ package list
 import (
 	"fmt"
 	"os"
-	"sort"
 	"strings"
 
 	"github.com/MakeNowJust/heredoc"
 	"github.com/mskelton/byte/internal/storage"
 	"github.com/spf13/cobra"
 )
+
+var printSlug bool
+
+type ListOptions struct {
+	slug bool
+}
+
+func ListBytes(options ListOptions) ([]string, error) {
+	filename, err := storage.GetByteDir()
+	if err != nil {
+		return []string{}, err
+	}
+
+	// List all the files in the byte dir
+	files, err := os.ReadDir(filename)
+	if err != nil {
+		return []string{}, err
+	}
+
+	if len(files) == 0 {
+		fmt.Println("no bytes found")
+		return []string{}, nil
+	}
+
+	ids := make([]string, len(files))
+	for i := len(files) - 1; i >= 0; i-- {
+		ids[i] = strings.TrimSuffix(files[i].Name(), ".md")
+	}
+
+	return ids, nil
+}
 
 var ListCmd = &cobra.Command{
 	Use:   "list",
@@ -21,32 +51,22 @@ var ListCmd = &cobra.Command{
     using the 'byte find' command.
   `),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		filename, err := storage.GetByteDir()
+		bytes, err := storage.SearchBytes(nil)
 		if err != nil {
 			return err
 		}
 
-		// List all the files in the byte dir
-		files, err := os.ReadDir(filename)
-		if err != nil {
-			return err
-		}
-
-		if len(files) == 0 {
+		if len(bytes) == 0 {
 			fmt.Println("no bytes found")
 			return nil
 		}
 
-		// Sort the files by name
-		sort.Slice(files, func(i, j int) bool {
-			return strings.Compare(files[i].Name(), files[j].Name()) > 0
-		})
-
-		for i := len(files) - 1; i >= 0; i-- {
-			name := files[i].Name()
-			slug := strings.TrimSuffix(name, ".md")
-
-			fmt.Println(slug)
+		for _, byte := range bytes {
+			if printSlug {
+				fmt.Println(byte.Slug)
+			} else {
+				fmt.Println(byte.Id)
+			}
 		}
 
 		return nil
@@ -55,4 +75,5 @@ var ListCmd = &cobra.Command{
 
 func init() {
 	ListCmd.Aliases = []string{"ls"}
+	ListCmd.Flags().BoolVarP(&printSlug, "slug", "s", false, "Show slugs instead of ids")
 }
