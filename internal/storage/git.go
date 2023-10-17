@@ -20,7 +20,7 @@ func Pull() error {
 	return nil
 }
 
-func SyncByte(filename string) error {
+func SyncByte(filename string, commitPrefix string) error {
 	dir := path.Dir(filename)
 
 	// Stage the file
@@ -30,7 +30,7 @@ func SyncByte(filename string) error {
 	}
 
 	// Commit the file
-	err = utils.RunCmd(dir, "git", "commit", "-m", "Add "+path.Base(filename))
+	err = utils.RunCmd(dir, "git", "commit", "-m", commitPrefix+" "+path.Base(filename))
 	if err != nil {
 		return err
 	}

@@ -76,7 +76,7 @@ var rootCmd = &cobra.Command{
 
 		// Commit and push the byte to Git if the user specified the --commit flag
 		if viper.GetBool("commit") {
-			err = storage.SyncByte(filename)
+			err = storage.SyncByte("Add", filename)
 			if err != nil {
 				return err
 			}
