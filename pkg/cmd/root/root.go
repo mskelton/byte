@@ -42,6 +42,7 @@ var rootCmd = &cobra.Command{
 		editor := editor.Editor{
 			Editor:   viper.GetString("editor"),
 			Filename: tempFilename,
+			Read:     true,
 		}
 
 		// Open the users editor to edit the file

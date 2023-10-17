@@ -26,6 +26,7 @@ func init() {
 type Editor struct {
 	Editor   string
 	Filename string
+	Read     bool
 }
 
 func (e *Editor) Edit() ([]byte, error) {
@@ -44,6 +45,11 @@ func (e *Editor) Edit() ([]byte, error) {
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		return []byte{}, err
+	}
+
+	// Skip reading the file if the content's aren't needed
+	if !e.Read {
+		return []byte{}, nil
 	}
 
 	// Read the file contents

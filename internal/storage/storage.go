@@ -5,7 +5,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/mskelton/byte/internal/utils"
@@ -32,6 +31,25 @@ func GetBytePath(id string) (string, error) {
 	return path.Join(dir, id+".md"), nil
 }
 
+func ReadByte(id string) ([]byte, error) {
+	filename, err := GetBytePath(id)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return data, nil
+}
+
+// Format the byte with Prettier
+func FormatByte(filename string) error {
+	return utils.RunCmd(path.Dir(filename), "bun", "prettier", "--write", filename)
+}
+
 func WriteByte(filename string, data []byte) error {
 	// Create the directory for the byte if necessary
 	err := os.Mkdir(path.Dir(filename), os.ModePerm)
@@ -45,46 +63,7 @@ func WriteByte(filename string, data []byte) error {
 		return err
 	}
 
-	// Format the byte with Prettier
-	err = utils.RunCmd(path.Dir(filename), "bun", "prettier", "--write", filename)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func Pull() error {
-	dir, err := GetByteDir()
-	if err != nil {
-		return nil
-	}
-
-	err = utils.RunCmd(dir, "git", "pull")
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func SyncByte(filename string) error {
-	dir := path.Dir(filename)
-
-	// Stage the file
-	err := utils.RunCmd(dir, "git", "add", filename)
-	if err != nil {
-		return err
-	}
-
-	// Commit the file
-	err = utils.RunCmd(dir, "git", "commit", "-m", "Add "+path.Base(filename))
-	if err != nil {
-		return err
-	}
-
-	// Push the commit
-	err = utils.RunCmd(dir, "git", "push")
+	err = FormatByte(filename)
 	if err != nil {
 		return err
 	}
@@ -126,30 +105,4 @@ func GetAllBytes() ([]Byte, error) {
 
 	return bytes, err
 
-}
-
-func SearchBytes(predicate func(byte Byte) bool) ([]Byte, error) {
-	bytes, err := GetAllBytes()
-	if err != nil {
-		return []Byte{}, err
-	}
-
-	var filtered []Byte
-
-	if predicate == nil {
-		filtered = bytes
-	} else {
-		for _, byte := range bytes {
-			if predicate(byte) {
-				filtered = append(filtered, byte)
-			}
-		}
-	}
-
-	// Sort the files by name
-	sort.Slice(filtered, func(i, j int) bool {
-		return strings.Compare(filtered[i].Title, filtered[j].Title) > 0
-	})
-
-	return filtered, err
 }
