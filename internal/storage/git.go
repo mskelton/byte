@@ -20,7 +20,7 @@ func Pull() error {
 	return nil
 }
 
-func SyncByte(filename string, commitPrefix string) error {
+func SyncByte(commitPrefix, filename string) error {
 	dir := path.Dir(filename)
 
 	// Stage the file
