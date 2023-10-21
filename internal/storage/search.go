@@ -5,7 +5,19 @@ import (
 	"strings"
 )
 
-func SearchBytes(predicate func(byte Byte) bool) ([]Byte, error) {
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+type WeightedByte struct {
+	Byte
+	Weight int
+}
+
+func SearchBytes(predicate func(byte Byte) any) ([]Byte, error) {
 	bytes, err := GetAllBytes()
 	if err != nil {
 		return []Byte{}, err
@@ -16,9 +28,27 @@ func SearchBytes(predicate func(byte Byte) bool) ([]Byte, error) {
 	if predicate == nil {
 		filtered = bytes
 	} else {
+		var weighted []WeightedByte
+		var highestWeight int
+
 		for _, byte := range bytes {
-			if predicate(byte) {
-				filtered = append(filtered, byte)
+			result := predicate(byte)
+			var weightedByte WeightedByte
+
+			if result == true {
+				weightedByte = WeightedByte{byte, 1}
+			} else if weight, ok := result.(int); ok && weight > 0 {
+				weightedByte = WeightedByte{byte, weight}
+			}
+
+			weighted = append(weighted, weightedByte)
+			highestWeight = max(highestWeight, weightedByte.Weight)
+		}
+
+		// Pick the bytes with the highest weight
+		for _, weightedByte := range weighted {
+			if weightedByte.Weight == highestWeight {
+				filtered = append(filtered, weightedByte.Byte)
 			}
 		}
 	}

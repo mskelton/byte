@@ -22,13 +22,20 @@ var SearchCmd = &cobra.Command{
   `),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Search for matching bytes
-		bytes, err := storage.SearchBytes(func(byte storage.Byte) bool {
+		bytes, err := storage.SearchBytes(func(byte storage.Byte) any {
 			if tag != "" {
 				return byte.HasTag(tag)
 			}
 
 			// Collect all args into a single string
 			query := strings.Join(args, " ")
+
+			// First try searching by whole words in the title
+			for _, word := range strings.Split(strings.ToLower(byte.Title), " ") {
+				if word == strings.ToLower(query) {
+					return 2
+				}
+			}
 
 			// First try searching by title
 			if strings.Contains(strings.ToLower(byte.Title), strings.ToLower(query)) {
@@ -40,7 +47,7 @@ var SearchCmd = &cobra.Command{
 				return strings.Contains(byte.Content, query)
 			}
 
-			return false
+			return -1
 		})
 
 		if err != nil {

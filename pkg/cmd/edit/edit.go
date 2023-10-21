@@ -20,7 +20,7 @@ var EditCmd = &cobra.Command{
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		hasArg := len(args) > 0
-		bytes, err := storage.SearchBytes(func(byte storage.Byte) bool {
+		bytes, err := storage.SearchBytes(func(byte storage.Byte) any {
 			// If an arg is provided, filter by id or slug
 			if hasArg {
 				return byte.Id == args[0] || byte.Slug == args[0]
