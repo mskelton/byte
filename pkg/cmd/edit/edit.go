@@ -48,7 +48,7 @@ var EditCmd = &cobra.Command{
 				slugs = append(slugs, item.Slug)
 			}
 
-			slug, err := utils.Filter(slugs)
+			slug, err = utils.Filter(slugs)
 			if err != nil {
 				return err
 			}
@@ -61,6 +61,7 @@ var EditCmd = &cobra.Command{
 		for _, b := range bytes {
 			if b.Slug == slug {
 				byte = b
+				break
 			}
 		}
 
