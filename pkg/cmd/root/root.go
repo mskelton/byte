@@ -83,7 +83,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		// Print the slug to allow filtering the output of this command
-		fmt.Println(id)
+		url.PrintUrl(id)
 		return nil
 	},
 }
