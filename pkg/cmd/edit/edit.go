@@ -6,6 +6,7 @@ import (
 	"github.com/MakeNowJust/heredoc"
 	"github.com/mskelton/byte/internal/storage"
 	"github.com/mskelton/byte/internal/utils"
+	"github.com/mskelton/byte/pkg/cmd/url"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -78,8 +79,7 @@ var EditCmd = &cobra.Command{
 			}
 		}
 
-		// Print the slug to allow filtering the output of this command
-		fmt.Println(byte.Id)
+		url.PrintUrl(byte.Id)
 
 		return nil
 	},
