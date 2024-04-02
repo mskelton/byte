@@ -4,7 +4,7 @@ CLI tool to create bytes (mini posts) for my website.
 
 ## Installation
 
-You can install url by running the install script which will download
+You can install byte by running the install script which will download
 the [latest release](https://github.com/mskelton/byte/releases/latest).
 
 ```bash
