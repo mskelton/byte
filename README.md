@@ -8,7 +8,7 @@ You can install byte by running the install script which will download
 the [latest release](https://github.com/mskelton/byte/releases/latest).
 
 ```bash
-curl -LSfs https://mskelton.dev/byte/install | sh
+curl -LSfs https://go.mskelton.dev/byte/install | sh
 ```
 
 Or you can build from source.
